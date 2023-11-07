@@ -2,7 +2,7 @@ import numpy as np
 from numba import njit, prange
 from numba.types import float64, UniTuple
 
-@njit(parallel=True)
+@njit()
 def _view_fill_numba(data, out, y_ix, x_ix, y_passed, x_passed, nodata):
     n = x_ix.size
     m = y_ix.size
@@ -14,7 +14,7 @@ def _view_fill_numba(data, out, y_ix, x_ix, y_passed, x_passed, nodata):
                 out[i, j] = nodata
     return out
 
-@njit(parallel=True)
+@njit()
 def _view_fill_by_axes_nearest_numba(data, out, y_ix, x_ix, nodata):
     m, n = y_ix.size, x_ix.size
     M, N = data.shape
@@ -33,7 +33,7 @@ def _view_fill_by_axes_nearest_numba(data, out, y_ix, x_ix, nodata):
                 out[i, j] = nodata
     return out
 
-@njit(parallel=True)
+@njit()
 def _view_fill_by_axes_linear_numba(data, out, y_ix, x_ix, nodata):
     m, n = y_ix.size, x_ix.size
     M, N = data.shape
@@ -71,7 +71,7 @@ def _view_fill_by_axes_linear_numba(data, out, y_ix, x_ix, nodata):
                 out[i, j] = nodata
     return out
 
-@njit(parallel=True)
+@njit()
 def _view_fill_by_entries_nearest_numba(data, out, y_ix, x_ix, nodata):
     m, n = y_ix.size, x_ix.size
     M, N = data.shape
@@ -91,7 +91,7 @@ def _view_fill_by_entries_nearest_numba(data, out, y_ix, x_ix, nodata):
             out.flat[i] = nodata
     return out
 
-@njit(parallel=True)
+@njit()
 def _view_fill_by_entries_linear_numba(data, out, y_ix, x_ix, nodata):
     m, n = y_ix.size, x_ix.size
     M, N = data.shape
@@ -130,7 +130,7 @@ def _view_fill_by_entries_linear_numba(data, out, y_ix, x_ix, nodata):
             out.flat[i] = nodata
     return out
 
-@njit(UniTuple(float64[:], 2)(UniTuple(float64, 9), float64[:], float64[:]), parallel=True)
+@njit(UniTuple(float64[:], 2)(UniTuple(float64, 9), float64[:], float64[:]))
 def _affine_map_vec_numba(affine, x, y):
     a, b, c, d, e, f, _, _, _ = affine
     n = x.size
