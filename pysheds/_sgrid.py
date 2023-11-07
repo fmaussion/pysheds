@@ -7,7 +7,6 @@ from numba.types import float64, int64, uint32, uint16, uint8, boolean, UniTuple
 
 @njit(int64[:,:](float64[:,:], float64, float64, UniTuple(int64, 8), boolean[:,:],
                  int64, int64, int64),
-      parallel=True,
       cache=True)
 def _d8_flowdir_numba(dem, dx, dy, dirmap, nodata_cells, nodata_out, flat=-1, pit=-2):
     fdir = np.zeros(dem.shape, dtype=np.int64)
@@ -39,7 +38,6 @@ def _d8_flowdir_numba(dem, dx, dy, dirmap, nodata_cells, nodata_out, flat=-1, pi
 
 @njit(int64[:,:](float64[:,:], float64[:,:], float64[:,:], UniTuple(int64, 8), boolean[:,:],
                  int64, int64, int64),
-      parallel=True,
       cache=True)
 def _d8_flowdir_irregular_numba(dem, x_arr, y_arr, dirmap, nodata_cells,
                                 nodata_out, flat=-1, pit=-2):
@@ -93,7 +91,6 @@ def _facet_flow(e0, e1, e2, d1=1., d2=1.):
     return r, s
 
 @njit(float64[:,:](float64[:,:], float64, float64, float64, float64, float64),
-      parallel=True,
       cache=True)
 def _dinf_flowdir_numba(dem, x_dist, y_dist, nodata, flat=-1., pit=-2.):
     m, n = dem.shape
@@ -144,7 +141,6 @@ def _dinf_flowdir_numba(dem, x_dist, y_dist, nodata, flat=-1., pit=-2.):
     return angle
 
 @njit(float64[:,:](float64[:,:], float64[:,:], float64[:,:], float64, float64, float64),
-      parallel=True,
       cache=True)
 def _dinf_flowdir_irregular_numba(dem, x_arr, y_arr, nodata, flat=-1., pit=-2.):
     m, n = dem.shape
@@ -197,7 +193,6 @@ def _dinf_flowdir_irregular_numba(dem, x_arr, y_arr, nodata, flat=-1., pit=-2.):
 
 @njit(Tuple((int64[:,:], int64[:,:], float64[:,:], float64[:,:]))
       (float64[:,:], UniTuple(int64, 8), boolean[:,:]),
-      parallel=True,
       cache=True)
 def _angle_to_d8_numba(angles, dirmap, nodata_cells):
     n = angles.size
@@ -254,7 +249,6 @@ def _angle_to_d8_numba(angles, dirmap, nodata_cells):
     return fdirs_0, fdirs_1, props_0, props_1
 
 @njit(float64[:,:,:](float64[:,:], float64, float64, boolean[:,:], float64, int64),
-      parallel=True,
       cache=True)
 def _mfd_flowdir_numba(dem, dx, dy, nodata_cells, nodata_out, p=1):
     m, n = dem.shape
@@ -643,7 +637,7 @@ def _dinf_accumulation_eff_iter_numba(acc, fdir_0, fdir_1, indegree, startnodes,
                     queue.append(endnode_1)
     return acc
 
-@njit(uint8[:](int64[:,:,:]), parallel=True)
+@njit(uint8[:](int64[:,:,:]))
 def _mfd_bincount(fdir):
     p, m, n = fdir.shape
     mn = m * n
@@ -1002,7 +996,6 @@ def _mfd_reverse_distance_iter_numba(rdist, fdir, indegree, startnodes, weights)
 # Functions for 'resolve_flats'
 
 @njit(UniTuple(boolean[:,:], 3)(float64[:,:], int64[:]),
-      parallel=True,
       cache=True)
 def _par_get_candidates_numba(dem, inside):
     n = inside.size
@@ -1037,7 +1030,6 @@ def _par_get_candidates_numba(dem, inside):
     return flats, fdirs_defined, higher_cells
 
 @njit(uint32[:,:](int64[:], boolean[:,:], boolean[:,:], int64[:,:]),
-      parallel=True,
       cache=True)
 def _par_get_high_edge_cells_numba(inside, fdirs_defined, higher_cells, labels):
     n = inside.size
@@ -1053,7 +1045,6 @@ def _par_get_high_edge_cells_numba(inside, fdirs_defined, higher_cells, labels):
     return high_edge_cells
 
 @njit(uint32[:,:](int64[:], float64[:,:], boolean[:,:], int64[:,:], int64),
-      parallel=True,
       cache=True)
 def _par_get_low_edge_cells_numba(inside, dem, fdirs_defined, labels, numlabels):
     n = inside.size
@@ -1351,7 +1342,6 @@ def _mfd_hand_iter_numba(fdir, mask):
     return hand
 
 @njit(float64[:,:](int64[:,:], float64[:,:], float64),
-      parallel=True,
       cache=True)
 def _assign_hand_heights_numba(hand_idx, dem, nodata_out=np.nan):
     n = hand_idx.size
@@ -1497,7 +1487,6 @@ def _d8_stream_connection_iter_numba(fdir, indegree, orig_indegree, startnodes,
     return profiles, connections
 
 @njit(float64[:,:](int64[:,:], int64[:,:], float64[:,:]),
-      parallel=True,
       cache=True)
 def _d8_cell_dh_numba(startnodes, endnodes, dem):
     n = startnodes.size
@@ -1509,7 +1498,6 @@ def _d8_cell_dh_numba(startnodes, endnodes, dem):
     return dh
 
 @njit(float64[:,:](int64[:,:], int64[:,:], int64[:,:], float64[:,:], float64[:,:], float64[:,:]),
-      parallel=True,
       cache=True)
 def _dinf_cell_dh_numba(startnodes, endnodes_0, endnodes_1, props_0, props_1, dem):
     n = startnodes.size
@@ -1525,7 +1513,6 @@ def _dinf_cell_dh_numba(startnodes, endnodes_0, endnodes_1, props_0, props_1, de
     return dh
 
 @njit(float64[:,:](int64[:,:], int64[:,:,:], float64[:,:,:], float64[:,:]),
-      parallel=True,
       cache=True)
 def _mfd_cell_dh_numba(startnodes, endnodes, props, dem):
     k, m, n = props.shape
@@ -1544,7 +1531,6 @@ def _mfd_cell_dh_numba(startnodes, endnodes, props, dem):
     return dh
 
 @njit(float64[:,:](int64[:,:], UniTuple(int64, 8), float64, float64),
-      parallel=True,
       cache=True)
 def _d8_cell_distances_numba(fdir, dirmap, dx, dy):
     n = fdir.size
@@ -1561,7 +1547,6 @@ def _d8_cell_distances_numba(fdir, dirmap, dx, dy):
 
 @njit(float64[:,:](int64[:,:], int64[:,:], float64[:,:], float64[:,:], UniTuple(int64, 8),
                    float64, float64),
-      parallel=True,
       cache=True)
 def _dinf_cell_distances_numba(fdir_0, fdir_1, prop_0, prop_1, dirmap, dx, dy):
     n = fdir_0.size
@@ -1583,7 +1568,6 @@ def _dinf_cell_distances_numba(fdir_0, fdir_1, prop_0, prop_1, dirmap, dx, dy):
     return cdist
 
 @njit(float64[:,:](int64[:,:], int64[:,:,:], float64[:,:,:], float64, float64),
-      parallel=True,
       cache=True)
 def _mfd_cell_distances_numba(startnodes, endnodes, props, dx, dy):
     k, m, n = props.shape
@@ -1602,7 +1586,6 @@ def _mfd_cell_distances_numba(startnodes, endnodes, props, dx, dy):
     return cdist
 
 @njit(float64[:,:](float64[:,:], float64[:,:]),
-      parallel=True,
       cache=True)
 def _cell_slopes_numba(dh, cdist):
     n = dh.size
@@ -1652,7 +1635,6 @@ def _dinf_fix_cycles_numba(fdir_0, fdir_1, max_cycle_size):
 
 # TODO: Assumes pits and flats are removed
 @njit(int64[:,:](int64[:,:], UniTuple(int64, 8)),
-      parallel=True,
       cache=True)
 def _flatten_fdir_numba(fdir, dirmap):
     r, c = fdir.shape
@@ -1719,7 +1701,6 @@ def _flatten_fdir_numba(fdir, dirmap):
     return flat_fdir
 
 @njit(int64[:,:](int64[:,:], UniTuple(int64, 8)),
-      parallel=True,
       cache=True)
 def _flatten_fdir_no_boundary(fdir, dirmap):
     r, c = fdir.shape
@@ -1745,7 +1726,6 @@ def _flatten_fdir_no_boundary(fdir, dirmap):
 
 # TODO: Assumes pits and flats are removed
 @njit(int64[:,:,:](float64[:,:,:]),
-      parallel=True,
       cache=True)
 def _flatten_mfd_fdir_numba(fdir):
     p, r, c = fdir.shape
@@ -1802,7 +1782,6 @@ def _construct_matching(fdir, dirmap):
     return startnodes, endnodes
 
 @njit(boolean[:,:](float64[:,:], int64[:]),
-      parallel=True,
       cache=True)
 def _find_pits_numba(dem, inside):
     n = inside.size
@@ -1823,7 +1802,6 @@ def _find_pits_numba(dem, inside):
     return pits
 
 @njit(float64[:,:](float64[:,:], int64[:]),
-      parallel=True,
       cache=True)
 def _fill_pits_numba(dem, pit_indices):
     n = pit_indices.size
